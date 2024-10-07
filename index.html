@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.12.4/xlsx.core.min.js"></script>
+<script src = "script.js"></script>
+<link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+</head>
+<body>
+<h1>Калькулятор громкоговорителей LPA</h1>
+</br>
+	<fieldset>
+	<legend>Громкоговоритель</legend>
+	<div id="exec_speker"> Исполнение:
+		<select id='exec' style = "text-align: center;">
+			<option value = "exec0">Выбрать</option>
+			<option value = "exec1">Потолочный</option>
+			<option value = "exec2">Настенный</option>
+		</select>
+	</div>
+	<div id="model_speker"> Модель:
+	</div>
+	</fieldset>
+</br>
+	<fieldset>
+	<legend>Помещение</legend>
+	<div id="length">
+		Длинна: 
+		<input type="text" id="inl" value="20" size="1">
+	</div>		
+	<div id="width">
+		Ширина:
+		<input type="text" id="inw" value="12" size="1">
+	</div>
+	<div id="higth">
+		Высота:
+		<input type="text" id="inh" value="6" size="1">
+	</div>
+	</fieldset>
+	</br>
+	<div>
+	<input id="btn" type= "button" value="подбор оборудования">
+	</div>
+	</br>
+	<div id="data">
+	<div id="head">
+		<div id="grid">
+			<div id = "row">Модель</div>
+			<div id = "row">Наименование</div>
+			<div id = "row">Кол-во</div>
+			<div id = "row">Eд.</div>
+		</div>
+	</div>
+	<div id="LX240">
+		<div id="grid">
+			<div id = "row">LPA</div>
+			<div id = "row">USB,икшер-усилитель</div>
+			<div id = "row">1</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="LX480">
+		<div id="grid">
+			<div id = "row">LPA-LX480</div>
+			<div id = "row">USB</div>
+			<div id = "row">1</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="LX650">
+		<div id="grid">
+			<div id = "row">LPA-LX650</div>
+			<div id = "row">USB, Микшер-усилитель</div>
+			<div id = "row">1</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="DT1240">
+		<div id="grid">
+			<div id = "row">Delta DT 1240</div>
+			<div id = "row">Свинцово-кислотный</div>
+			<div id = "row">2</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="DTM1255L">
+		<div id="grid">
+			<div id = "row">Delta DTM 1255 L</div>
+			<div id = "row">Свинцово-кислотный аккумулятор</div>
+			<div id = "row">2</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="DT1265">
+		<div id="grid">
+			<div id = "row">Delta DT 1265</div>
+			<div id = "row">Свинцово-кислотный аккумулятор</div>
+			<div id = "row">2</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="M1">
+		<div id="grid">
+			<div id = "row">LPA-M1</div>
+			<div id = "row">Настольная микрофонная</div>
+			<div id = "row_q">1</div>
+			<div id = "row">шт.</div>
+		</div>
+	</div>
+	<div id="empty">
+		<div id = "row">Мощность превышает допустимую</div>
+	</div>
+	</div>
+	</br>
+	<input id="btn2" type= "button" value="Печать в PDF">
+	</br>
+	<input id="btn3" type= "button" value="Структурная схема">
+</body>
+</html>

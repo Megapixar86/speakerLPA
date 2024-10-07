@@ -1,0 +1,98 @@
+#grid {
+	display: grid;
+    grid-template-columns: 25% 50% 15% 10%;
+	text-align: center;
+	font-size: 20px;
+	border: 1px solid #000;
+	border-radius: 3px;
+	/*background-color: #FADBC8;*/
+}
+#data {
+	display: block;
+}
+
+#model_speker{
+	display: none;
+}
+#head {
+	display: none;
+	background-color: #f3a784;
+}
+#LX240 {
+	display: none;
+	background-color: #fad8c8;
+}
+#LX480 {
+	display: none;
+	background-color: #fad8c8;
+}
+#LX650 {
+	display: none;
+	background-color: #fad8c8;
+}
+#DT1240 {
+	display: none;
+	background-color: #c5c4c48f;
+}
+#DTM1255L {
+	display: none;
+	background-color: #c5c4c48f;
+}
+#DT1265 {
+	display: none;
+	background-color: #c5c4c48f;
+}
+#M1 {
+	display: none;
+	background-color: #ceb3a4ef;
+}
+#empty {
+	display: none;
+	background-color: #ceb3a4ef;
+}
+.legend {
+	font-size: 20px;
+	padding: 5px
+	background-color: #fff;
+	padding: 6px 6px margin: .5rem
+}
+#field {
+	background-color: #d3d3d3;
+	font-size: 20px;
+	padding: 5px
+}
+/*input {
+	margin: .4rem
+	text-align: center;
+}*/
+input[type=text] {
+	height: 20px;
+	background-color: #fff;
+	font-size: 15px
+	margin-left: auto;
+  	margin-right: auto;
+	text-align: center;
+}
+#btn {
+	width: 300px;
+	padding: 1px;
+	background-color: #e9967a;
+	border-radius: 3px;
+	border: 1px solid #000
+}
+#btn2 {
+	display: none;
+	width: 100px;
+	padding: 1px;
+	background-color: #e9967a;
+	border-radius: 3px;
+	border: 1px solid #000
+}
+#btn3 {
+	display: none;
+	width: 150px;
+	padding: 1px;
+	background-color: #e9967a;
+	border-radius: 3px;
+	border: 1px solid #000
+}
