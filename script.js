@@ -186,17 +186,21 @@
 		}
 		return num
 	}
-	
+*/	
 	function calc(){
 		drawClear()
 		try {
 			//высота установки
-			let height = +el("height_inp").value
+			let height = +el("inh").value
+			console.log(height)
 			if(isNaN(height) || height === 0){
 				//height = 0;
 				//drawERROR("Введены не правильные данные!!! Введите числовое значение отличное от нуля и выберите модель")
 				throw new Error("Данные не верны");
 			}
+			//длинна помещения
+			let length = + el("").value
+			console.log(length)
 			//уровень шума
 			let noise = +el("noise_inp").value
 			if(isNaN(noise) || noise === 0 ){
@@ -345,7 +349,7 @@
 		str = str + '</div>'
 		es('#data').insertAdjacentHTML('beforeend', str)
 	}
-	*/	
+
 	// асинхронная функция печати в PDF
 	/*async function print() {	
 		el("data").style.display = "block";
@@ -357,7 +361,7 @@
 	function onLoadHandler() {
 		//-- подключаем обработчик щелчка
 		document.addEventListener("change", changeVal);
-		//el("btn").addEventListener("click", calc);
+		el("btn").addEventListener("click", calc);
 		//el("btn2").addEventListener("click", print);
 	}
 	//пуск
