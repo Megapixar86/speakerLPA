@@ -27,20 +27,28 @@
 	<fieldset>
 	<legend>Помещение</legend>
 	<div id="height">
-		Высота:
+		Высота, м:
 		<input type="text" id="inh" value="6" size="1">
 	</div>
-	<div id="length">
-		Длинна: 
-		<input type="text" id="inl" value="20" size="1">
-	</div>		
-	<div id="width">
-		Ширина:
-		<input type="text" id="inw" value="12" size="1">
+	<div id="length_width">
+		<input type="checkbox">
+		Длинна, м: 
+		<input type="text" id="inl" value="20" size="1" disabled = "disabled">
+		Ширина, м:
+		<input type="text" id="inw" value="10" size="1" disabled = "disabled">
 	</div>
-	<div>
-		Площадь:
-		<input type="text" value="v*h" id="sq" size ="2"/>
+	<div id = "area">
+		<input type="checkbox">
+		Площадь, м2:
+		<input type="text" value="200" id="sq" size ="2" disabled = "disabled">
+	</div>
+	<div id="noise"> 
+		Уровень шума, дБ
+		<input type="text" id="noise_inp" value="60" size="1">
+	</div>
+	<div id="uzd"> 
+		Необходимый УЗД, дБ
+		<input type="text" id="uzd_inp" value="0" size="1" disabled = "disabled">
 	</div>
 	</fieldset>
 	</br>
@@ -49,73 +57,42 @@
 	</div>
 	</br>
 	<div id="data">
+
 	<div id="head">
 		<div id="grid">
-			<div id = "row">Модель</div>
-			<div id = "row">Наименование</div>
-			<div id = "row">Кол-во</div>
-			<div id = "row">Eд.</div>
+			<div id = "row">Название</div>
+			<div id = "row">Значение</div>
 		</div>
 	</div>
-	<div id="LX240">
+	
+	<div id="data_string">
 		<div id="grid">
-			<div id = "row">LPA</div>
-			<div id = "row">USB,икшер-усилитель</div>
-			<div id = "row">1</div>
-			<div id = "row">шт.</div>
+			<div id = "row">Громкоговоритель</div>
+			<div id = "row"></div>
 		</div>
 	</div>
-	<div id="LX480">
+
+	<div id="data_string">
 		<div id="grid">
-			<div id = "row">LPA-LX480</div>
-			<div id = "row">USB</div>
-			<div id = "row">1</div>
-			<div id = "row">шт.</div>
+			<div id = "row">Мощность включения</div>
+			<div id = "row"></div>
 		</div>
 	</div>
-	<div id="LX650">
+
+	<div id="data_string">
 		<div id="grid">
-			<div id = "row">LPA-LX650</div>
-			<div id = "row">USB, Микшер-усилитель</div>
-			<div id = "row">1</div>
-			<div id = "row">шт.</div>
+			<div id = "row">Площадь озвучивания одного громкоговорителя</div>
+			<div id = "row"></div>
 		</div>
 	</div>
-	<div id="DT1240">
+
+	<div id="data_string">
 		<div id="grid">
-			<div id = "row">Delta DT 1240</div>
-			<div id = "row">Свинцово-кислотный</div>
-			<div id = "row">2</div>
-			<div id = "row">шт.</div>
+			<div id = "row">Количество</div>
+			<div id = "row"></div>
 		</div>
 	</div>
-	<div id="DTM1255L">
-		<div id="grid">
-			<div id = "row">Delta DTM 1255 L</div>
-			<div id = "row">Свинцово-кислотный аккумулятор</div>
-			<div id = "row">2</div>
-			<div id = "row">шт.</div>
-		</div>
-	</div>
-	<div id="DT1265">
-		<div id="grid">
-			<div id = "row">Delta DT 1265</div>
-			<div id = "row">Свинцово-кислотный аккумулятор</div>
-			<div id = "row">2</div>
-			<div id = "row">шт.</div>
-		</div>
-	</div>
-	<div id="M1">
-		<div id="grid">
-			<div id = "row">LPA-M1</div>
-			<div id = "row">Настольная микрофонная</div>
-			<div id = "row_q">1</div>
-			<div id = "row">шт.</div>
-		</div>
-	</div>
-	<div id="empty">
-		<div id = "row">Мощность превышает допустимую</div>
-	</div>
+
 	</div>
 	</br>
 	<input id="btn2" type= "button" value="Печать в PDF">
