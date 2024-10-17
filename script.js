@@ -48,7 +48,7 @@
 				}
 			}
 			if(exc == "Потолочный"){
-				el("model_speker").style.display = "block";
+				el("model_speker").style.display = "table-row";
 				if(el("sel")!== null){
 					el('model_speker').removeChild(el("sel"));
 				}

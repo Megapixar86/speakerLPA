@@ -13,41 +13,49 @@
 </br>
 	<fieldset>
 	<legend>Громкоговоритель</legend>
-	<div id="exec_speker"> Исполнение:
+	<div id="exec_speker">
+		<p id = "p1">-</p>
+		<label for="exec">Исполнение:</label>
 		<select id='exec' style = "text-align: center;">
 			<option value = "exec0">Выбрать</option>
 			<option value = "exec1">Потолочный</option>
 			<option value = "exec2">Настенный</option>
 		</select>
 	</div>
-	<div id="model_speker"> Модель:
+	<div id="model_speker">
+		<p id = "p1">-</p>
+		<label for="sel">Модель:</label>
+		<select id='sel' style = "text-align: center;"></select>
 	</div>
 	</fieldset>
 </br>
 	<fieldset>
 	<legend>Помещение</legend>
 	<div id="height">
-		Высота, м:
+		<p>-</p>
+		<label for="inh">Высота, м:</label>
 		<input type="text" id="inh" value="6" size="1">
 	</div>
 	<div id="length_width">
-		<input type="checkbox">
-		Длинна, м: 
-		<input type="text" id="inl" value="20" size="1" disabled = "disabled">
-		Ширина, м:
+		<p><input type="radio" name ="pole" id = "var1"></p>
+		<label for="inlw">Длинна, м x Ширина, м:</label>
+		<input type="text" id="inlw" value="20" size="1" disabled = "disabled">
+		x
 		<input type="text" id="inw" value="10" size="1" disabled = "disabled">
 	</div>
 	<div id = "area">
-		<input type="checkbox">
-		Площадь, м2:
-		<input type="text" value="200" id="sq" size ="2" disabled = "disabled">
+		<p><input type="radio" name ="pole" id = "var2"></p>
+		<label for="sq">Площадь, м2:</label>
+		<input type="text" value="200" id="sq" size ="1" disabled = "disabled">
 	</div>
-	<div id="noise"> 
-		Уровень шума, дБ
+	<div id="noise">
+		<p>-</p> 
+		<label for="noise_inp">Уровень шума, дБ:</label>
 		<input type="text" id="noise_inp" value="60" size="1">
 	</div>
 	<div id="uzd"> 
-		Необходимый УЗД, дБ
+		<p>-</p>
+		<label for="uzd_inp">УЗД, дБ:</label>
 		<input type="text" id="uzd_inp" value="0" size="1" disabled = "disabled">
 	</div>
 	</fieldset>

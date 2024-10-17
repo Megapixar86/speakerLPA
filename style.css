@@ -7,6 +7,11 @@
 	border-radius: 3px;
 	/*background-color: #FADBC8;*/
 }
+
+#p1 {
+	width: 21px;
+}
+
 #data {
 	display: block;
 }
@@ -14,58 +19,52 @@
 #model_speker{
 	display: none;
 }
+
 #head {
 	display: none;
 	background-color: #f3a784;
 }
+
 #LX240 {
 	display: none;
 	background-color: #fad8c8;
 }
-#LX480 {
-	display: none;
-	background-color: #fad8c8;
-}
-#LX650 {
-	display: none;
-	background-color: #fad8c8;
-}
-#DT1240 {
-	display: none;
-	background-color: #c5c4c48f;
-}
-#DTM1255L {
-	display: none;
-	background-color: #c5c4c48f;
-}
-#DT1265 {
-	display: none;
-	background-color: #c5c4c48f;
-}
-#M1 {
-	display: none;
-	background-color: #ceb3a4ef;
-}
+
 #empty {
 	display: none;
 	background-color: #ceb3a4ef;
 }
-.legend {
-	font-size: 20px;
+
+legend {
+	font-size: 25px;
 	padding: 5px
 	background-color: #fff;
 	padding: 6px 6px margin: .5rem
 }
-#field {
-	background-color: #d3d3d3;
-	font-size: 20px;
+
+fieldset {
+	display: table;
+	width: 500px;
+	background-color: #f0ebeb;
 	padding: 5px
 }
+
 /*input {
 	margin: .4rem
 	text-align: center;
 }*/
+
+label {
+	display: table-cell;
+	width: 166px;
+}
+
+select {
+	display: table-cell;
+}
+
 input[type=text] {
+	display: table-cell;
 	height: 20px;
 	background-color: #fff;
 	font-size: 15px
@@ -73,6 +72,11 @@ input[type=text] {
   	margin-right: auto;
 	text-align: center;
 }
+
+div {
+	display: table-row;
+}
+
 #btn {
 	width: 300px;
 	padding: 1px;
@@ -80,6 +84,7 @@ input[type=text] {
 	border-radius: 3px;
 	border: 1px solid #000
 }
+
 #btn2 {
 	display: none;
 	width: 100px;
@@ -88,6 +93,7 @@ input[type=text] {
 	border-radius: 3px;
 	border: 1px solid #000
 }
+
 #btn3 {
 	display: none;
 	width: 150px;
