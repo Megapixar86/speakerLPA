@@ -91,91 +91,6 @@
 	)
 	//console.log(objs_w)
 	
-	// изменение элемента select
-	/*function changeVal(event){
-		//получить ID элемента от события
-		let selId = event.target.id;
-		if (selId === "mod_sel"){
-		drawClear()
-		let t = el("mod_sel").options[el("mod_sel").selectedIndex].text;
-			if (t !== "Выбрать"){
-				el("info").style.display = "block"
-			}else{
-				el("info").style.display = "none"
-			}
-			el("devices").innerText = ''
-			el("power").innerText = ''
-			el("freq").innerText = ''
-			el("spl").innerText = ''
-			el("angle").innerText = ''
-			for( obj in objs){
-				if(objs[obj]['Модель']===t){
-					ob = obj;
-					for(key in objs[obj]){
-						if(key === "Описание"){
-							}
-						if(key === "Мощность, Вт"){
-								let st = objs[obj][key];
-								let str= 'Выберите мощность, Вт: <select id="power_sel" style = "width: 60px">'
-								let arr = st.split('/')
-								for(let i=0; i<arr.length; i++){
-								}
-								str =str +'</select>'
-								es('#power').insertAdjacentHTML('beforeend', str)
-							}
-						if(key === "SPL, дБ"){
-								spl = objs[obj][key]
-								str = '<div>SPL равен '+ objs[obj][key] +' дБ</div>'
-								es('#spl').insertAdjacentHTML('beforeend', str)
-							}
-						if(key.slice(0, 19) === "Угол направленности"){
-								ang = objs[obj][key]
-								let str = 'Выберите частоту, кГц: <select id="freq_sel" style = "width: 60px">'
-								let arr = key.split(' ')
-								//console.log(arr)
-								arr = arr[3].split('/')
-								for(let i=0; i<arr.length; i++){
-									str = str + '<option value = "f' + i +'">'+arr[i]+'</option>'
-								}
-								str=str +'</select></br>'
-								es('#freq').insertAdjacentHTML('beforeend', str)
-								let arr2 = ang.split('/')
-								selAng = arr2[0]
-								strn = 'Угол направленности равен '+ selAng +' градусам'
-								el('angle').append(strn)
-						}
-						if(key === "Материал"){
-								el("devices").append(', '+ key.toString().toLowerCase() + ': ' + objs[obj][key]);
-						}
-						}
-					}
-				};
-		}
-		if (selId === "freq_sel"){
-			el("angle").innerText = ''
-			let ml = el("freq_sel").selectedIndex
-			drawClear()
-			let arr = ang.split('/')
-			selAng = arr[ml]
-			str = 'Угол направленности равен '+ selAng +' градусам'
-			el('angle').append(str)
-		}
-	}	
-	
-	function range(start, end, step=1){
-		if (typeof end === 'undefined') {
-			end = start, start = 0;
-		}
-		let arr = [];
-		if(end > start){
-			let len = Math.round((end - start) / step);
-			while ( len-- ) {
-				arr[len] = start + (len * step);
-			}
-		}
-		return arr;
-	}
-	
 	//ограничить значение
 	function LimNum(num, minNum, maxNum){
 		if(num < minNum){
@@ -186,7 +101,7 @@
 		}
 		return num
 	}
-*/	
+
 	function calc(){
 		drawClear()
 		try {
@@ -198,23 +113,29 @@
 				//drawERROR("Введены не правильные данные!!! Введите числовое значение отличное от нуля и выберите модель")
 				throw new Error("Данные не верны");
 			}
-			//длинна помещения
-			let length = + el("").value
-			console.log(length)
-			//уровень шума
-			let noise = +el("noise_inp").value
-			if(isNaN(noise) || noise === 0 ){
-				//noise = 0;
-				//drawERROR("Введены не правильные данные!!! Введите числовое значение отличное от нуля и выберите модель")
+			//Площадь помещения
+			let area = + el("sq").value
+			console.log(area)
+			if(isNaN(area) || area === 0 ){
 				throw new Error("Данные не верны");
 			}
-			//мощность включения
-			let power = +el("power_sel").options[el("power_sel").selectedIndex].text
+			//уровень шума
+			let noise = +el("noise_inp").value
+			console.log(noise)
+			if(isNaN(noise) || noise === 0 ){
+				throw new Error("Данные не верны");
+			}
 			//узд
-			let uzd = +spl + 10 * Math.log10(power)
+			let uzd = noise + 15
+			console.log(uzd)
+			
+			//мощность включения
+			//let power = +el("power_sel").options[el("power_sel").selectedIndex].text
+			//узд
+			//let uzd = +spl + 10 * Math.log10(power)
 			//максимальная дальность
-			let l = 0
-			if(uzd >= (noise-15)){
+			//let l = 0
+			/*if(uzd >= (noise-15)){
 				l = 10**((uzd - (noise + 15))/20);
 			}
 			//console.log(l)
@@ -277,7 +198,7 @@
 			}
 			if(ruporAll.dist.length !==0){
 				getTable(ruporAll)
-			}
+			}*/
 		}catch (err) {
 			console.log(err)
 			//alert('не выбрана модель')
