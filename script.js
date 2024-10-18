@@ -6,7 +6,7 @@
 	const enm = (name)=> document.getElementsByName(name)[0]
 	//адрес спецификации
 	//var url = "https://cloud.luis.ru/index.php/s/6NSQGe3YpBKzwWP/download/LPA_Spec.xlsx"
-	var url = "http://192.168.0.114:8080/LPA_Spec.xlsx"
+	var url = "http://127.0.0.1:8080/LPA_Spec.xlsx"
 	//глобальные переменные
 	let objs_p
 	let objs_w
@@ -34,12 +34,16 @@
 		const json = await XLS.utils.sheet_to_json(xls.Sheets[sht]);
 		return json
 	}
+
+	//загружаем данные из спецификации и отпраляем их в переменную objs
+	getData(url, "Лист2").then(json => objs_p = json)
+	getData(url, "Лист3").then(json => objs_w = json)
+
 	//переменная исполнение
 	function changeVal(event){
 		let selId = event.target.id;
 		if(selId === "exec"){
 			let exc = el("exec").options[el("exec").selectedIndex].text;
-			console.log(exc)
 			//проверяем какое исполнение выбрано
 			if(exc == "Выбрать"){
 				el("model_speker").style.display = "none";
@@ -57,40 +61,35 @@
 					str = str+'<option value = "p' + obj +'">'+objs_p[obj]['Модель'].toString()+'</option>';
 				}
 				str = str+'</select>';
-				//el("exec").append(str);
 				es('#model_speker').insertAdjacentHTML('beforeend', str);
-				//console.log(str)
 			}
 			if(exc == "Настенный"){
-				el("model_speker").style.display = "block";
+				el("model_speker").style.display = "table-row";
 				if(el("sel")!== null){
 					el('model_speker').removeChild(el("sel"));
 				}
-				//es('#model_speker').removeChild("sel");
 				let str = '<select id="sel">';
 				for(let obj in objs_w ){
 					str = str+'<option value = "p' + obj +'">'+objs_w[obj]['Модель'].toString()+'</option>';
 				}
 				str = str+'</select>';
-				//el("exec").append(str);
 				es('#model_speker').insertAdjacentHTML('beforeend', str);
 				}
 		}
+		if(el("var2").checked == true){
+				el("sq").disabled = false
+				el("inlw").disabled = true
+				el("inw").disabled = true
+		}else{
+				el("sq").disabled = true
+				el("inlw").disabled = false
+				el("inw").disabled = false
+				el("sq").value = (+el("inlw").value) * (+el("inw").value)
+		}
+		el("noise_inp").value = LimNum(+el("noise_inp").value, 30, 99)
+		el("uzd_inp").value = +el("noise_inp").value + 15
 	}
-	
-	//загружаем данные из спецификации и отпраляем их в переменную objs
-	getData(url, "Лист2").then(json => {
-		objs_p = json;
-		console.log(json);
 
-	})
-	//console.log(objs_p)
-	getData(url, "Лист3").then(json => {
-		objs_w = json;
-		console.log(objs_w)}
-	)
-	//console.log(objs_w)
-	
 	//ограничить значение
 	function LimNum(num, minNum, maxNum){
 		if(num < minNum){
@@ -103,11 +102,11 @@
 	}
 
 	function calc(){
-		drawClear()
+		//drawClear()
 		try {
-			//высота установки
+			//Высота установки
 			let height = +el("inh").value
-			console.log(height)
+			//console.log(height)
 			if(isNaN(height) || height === 0){
 				//height = 0;
 				//drawERROR("Введены не правильные данные!!! Введите числовое значение отличное от нуля и выберите модель")
@@ -115,93 +114,37 @@
 			}
 			//Площадь помещения
 			let area = + el("sq").value
-			console.log(area)
+			//console.log(area)
 			if(isNaN(area) || area === 0 ){
 				throw new Error("Данные не верны");
 			}
-			//уровень шума
+			//Уровень шума
 			let noise = +el("noise_inp").value
-			console.log(noise)
+			//console.log(noise)
 			if(isNaN(noise) || noise === 0 ){
 				throw new Error("Данные не верны");
 			}
+			let uzd = +el("uzd_inp").value
+			if(el("exec").options[el("exec").selectedIndex].text === "Потолочный"){
+				//console.log("Монтируем в потолок")
+				for(obj in objs_w){
+					if(objs_p[obj]['Модель'] === el("sel").options[el("sel").selectedIndex].text){
+						ob = obj
+						break
+					}
+				}
+				let spl = objs_p[ob]['Мощность, Вт']
+				//let power_calc = 10**(uzd - spl + 20 * Math.log10(1.4*(height-1.5)))
+				console.log(spl)
+				//if(objs_w[obj]['Модель'])
+			}
 			//узд
-			let uzd = noise + 15
-			console.log(uzd)
+			//let uzd = noise + 15
+			//console.log(uzd)
 			
-			//мощность включения
-			//let power = +el("power_sel").options[el("power_sel").selectedIndex].text
-			//узд
-			//let uzd = +spl + 10 * Math.log10(power)
-			//максимальная дальность
-			//let l = 0
-			/*if(uzd >= (noise-15)){
-				l = 10**((uzd - (noise + 15))/20);
-			}
-			//console.log(l)
-			let d = 0 
-			if(l > height){
-				d = Math.sqrt(l**2 - (height-1.5)**2)
-			}
-			//console.log(d)
-			let r = range(5, d, Math.ceil((d-5)/5))
-			//console.log(r)
-			let rAll = range(5, d)
-			//console.log(rAll)
-			//словарь расчетных значений
-			let rupor = {
-				dist: [],
-				width: [],
-				uzd: [],
-			}
-			//словарь всех значений
-			let ruporAll = {
-				dist: [],
-				width: [],
-				uzd: [],
-			}
-			//добавим элементы в словарь всех значений
-			for(elem of rAll){
-				let eLength = Math.sqrt(elem**2 + (height-1.5)**2)
-				let euzd  = uzd - 20 * Math.log10(eLength)
-				let ewidth = 2 * eLength * Math.tan(Math.PI*selAng/360)
-				//console.log(ruporAll.uzd.length)
-				if(ruporAll.uzd.length !== 0 && ruporAll.uzd[ruporAll.uzd.length-1] === +euzd.toFixed(0)){
-					ruporAll.dist[ruporAll.dist.length-1] = elem
-					ruporAll.width[ruporAll.width.length-1]=+ewidth.toFixed(0)
-					ruporAll.uzd[ruporAll.uzd.length-1] = +euzd.toFixed(0)
-				}
-				else{
-					ruporAll.dist.push(elem)
-					ruporAll.width.push(+ewidth.toFixed(0))
-					ruporAll.uzd.push(+euzd.toFixed(0))
-				}
-			}
-			let k = ruporAll.dist.length
-			let m = Math.ceil(k/5)
-			//добавим элементы для рисунка
-			for(let i = 0; i < k; i+=m){
-				//console.log(i)
-				rupor.dist.push(ruporAll.dist[i])
-				rupor.width.push(ruporAll.width[i])
-				rupor.uzd.push(ruporAll.uzd[i])
-			}
-			if(ruporAll.uzd[k-1] !== rupor.uzd[rupor.uzd.length-1]){
-				rupor.dist.push(ruporAll.dist[k-1])
-				rupor.width.push(ruporAll.width[k-1])
-				rupor.uzd.push(ruporAll.uzd[k-1])
-			}
-			//рисуем диаграмму изменения УЗД от расстояния
-			if(rupor.dist.length !==0){
-				draw(rupor, selAng)
-				el("myCanvas").scrollIntoView()
-			}
-			if(ruporAll.dist.length !==0){
-				getTable(ruporAll)
-			}*/
 		}catch (err) {
 			console.log(err)
-			//alert('не выбрана модель')
+			alert('Вы ввели не верное значение')
 		}
 	}
 	// нарисовать диаграмму
@@ -283,7 +226,6 @@
 		//-- подключаем обработчик щелчка
 		document.addEventListener("change", changeVal);
 		el("btn").addEventListener("click", calc);
-		//el("btn2").addEventListener("click", print);
 	}
 	//пуск
 	window.onload = onLoadHandler;
