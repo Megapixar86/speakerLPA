@@ -133,7 +133,7 @@
 						break
 					}
 				}
-				let spl = objs_p[ob]['Мощность, Вт']
+				let spls= objs_p[ob]['Мощность, Вт'].split("/")
 				//let power_calc = 10**(uzd - spl + 20 * Math.log10(1.4*(height-1.5)))
 				console.log(spl)
 				//if(objs_w[obj]['Модель'])
