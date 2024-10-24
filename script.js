@@ -173,6 +173,9 @@
 			if(el("exec").options[el("exec").selectedIndex].text === "Настенный"){
 				power = objs_w[ob]['Мощность, Вт'].split("/")
 				spl = +objs_w[ob]['SPL, дБ']
+				if(el()){
+					ang = +objs_w[ob]['Угол направленности при 1/4/8Гц'].split("/")
+				}
 				for(let elem of power){
 					let d = dist(spl, elem, uzd)
 					let uzdL = UZDofdist(spl, elem, height-1.5)
