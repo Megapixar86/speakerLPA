@@ -22,6 +22,7 @@
 	let len_u
 	let arr_dist
 	let arr_uzd
+	let areaL
 	//let rupor
 	//функция загрузки данных
 	async function getData(address, sht){
@@ -125,7 +126,7 @@
 			if(isNaN(height) || height === 0){
 				//height = 0;
 				//drawERROR("Введены не правильные данные!!! Введите числовое значение отличное от нуля и выберите модель")
-				throw new Error("Данные не верны");
+				throw new Error("Данные высоты не верны");
 			}
 			//Площадь помещения
 			let area = + el("sq").value
@@ -142,51 +143,62 @@
 			uzd = +el("uzd_inp").value
 			//console.log(uzd)
 			ob = el("sel").selectedIndex
-
+			//расчет для Потолочников
 			if(el("exec").options[el("exec").selectedIndex].text === "Потолочный"){
-				//console.log("Монтируем в потолок")
-				
+				//получим данные из спецификации для выбранной модели
 				power = objs_p[ob]['Мощность, Вт'].split("/")
 				spl = +objs_p[ob]['SPL, дБ']
-				
-				for(let elem of power){
-					let d = dist(spl, elem, uzd)
-					let uzdL = UZDofdist(spl, elem, height-1.5)
-					if(uzdL<120){
-						arr_dist.push(d)
-						arr_uzd.push(uzdL)
+				ang = objs_w[ob]['Угол направленности при 1/4/8 кГц'].split("/")
+				//расчитываем дальность и УЗД в зависимости от выбранной частоты
+				if(el("fr_sel").selectedIndex == 0){
+					for(let elem of power){
+						let d = dist(spl, elem, uzd)
+						let uzdMax = UZDofdist(spl, elem, height-1.5)
+						if(uzdMax<120){
+							arr_dist.push(d)
+							arr_uzd.push(uzdMax)
+						}
+						//elem
 					}
-					//elem
+				} else {
+					let d = (height - 1.5)/ Math.cos(Math.PI * ang[el("fr_sel").selectedIndex]/360)
+					arr_dist.push(d)
+					for(let elem of power){
+						let uzdL = UZDofdist(spl, elem, d)
+						let uzdMax = UZDofdist(spl, elem, height-1.5)
+						if(uzdMax<120 && uzdL > uzd){
+							arr_uzd.push(uzdL)
+						}
+					}
 				}
-				
-				//lenght = dist(spl, power[], uzd)
-				//len_u = (height-1.5)/Math.cos(90*Math.PI/180)
-				//len_u = height
-				//power_calc = 10**((spl + 20 * Math.log10(len_u) - uzd )/10)
-				//power_calc = 10**(uzd - spl + 20 * Math.log10( len_u) )/10
-				//uzd=+spl + 10 * Math.log10(power)
-				//10**(75-95)/10
-				//lenght = 10**((spl + 10 * Math.log10(+power[4]) - uzd)/20)
-				//console.log(objs_p[ob]['Мощность, Вт'])
-				//if(objs_w[obj]['Модель'])
+				areaL = (arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)*Math.PI
 			}
+			// расчет для настенных громкоговорителей
 			if(el("exec").options[el("exec").selectedIndex].text === "Настенный"){
+				//получим данные из спецификации для выбранной модели
 				power = objs_w[ob]['Мощность, Вт'].split("/")
 				spl = +objs_w[ob]['SPL, дБ']
-				if(el()){
-					ang = +objs_w[ob]['Угол направленности при 1/4/8Гц'].split("/")
-				}
+				ang = objs_w[ob]['Угол направленности при 1/4/8 кГц'].split("/")
+				//расчитываем дальность и УЗД
 				for(let elem of power){
 					let d = dist(spl, elem, uzd)
-					let uzdL = UZDofdist(spl, elem, height-1.5)
-					if(uzdL<120){
+					let uzdL = UZDofdist(spl, elem, d)
+					if(uzdL<120 && uzdL > uzd){
 						arr_dist.push(d)
 						arr_uzd.push(uzdL)
 					}
-					//elem
 				}
+				// в зависимости от выбранной частоты считаем площадь
+				if(el("fr_sel").selectedIndex == 0){
+					let L = Math.sqrt(arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)
+					let R = arr_dist[arr_dist.length-1]
+					areaL = (Math.PI*R*R)/2 - R*R*Math.acos(1-(R-L)/R) + L*Math.sqrt(R*R - L*L)
+				} else {
+					
+				}
+
 			}
-			let areaL = (arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)*Math.PI
+			//let areaL = (arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)*Math.PI
 			el("row0").value = objs_p[ob]['Модель']
 			el("row1").value = power[power.length-1]
 			el("row2").value = areaL
