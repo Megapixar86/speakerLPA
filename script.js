@@ -19,10 +19,12 @@
 	let power_calc
 	let lenght
 	let height
-	let len_u
+	let L
+	let Ldiff
 	let arr_dist
 	let arr_uzd
 	let areaL
+	let model
 	//let rupor
 	//функция загрузки данных
 	async function getData(address, sht){
@@ -51,6 +53,7 @@
 	//переменная исполнение
 	function changeVal(event){
 		let selId = event.target.id;
+		//el("data").style.display = "block"
 		if(selId === "exec"){
 			let exc = el("exec").options[el("exec").selectedIndex].text;
 			//проверяем какое исполнение выбрано
@@ -115,7 +118,8 @@
 	let UZDofdist = (spl, power, dist) => spl + 10*Math.log10(power) - 20*Math.log10(dist)
 
 	function calc(){
-		//drawClear()
+		//очищаем 3d
+		if(el('3d').lastElementChild != null){el('3d').removeChild(el('3d').lastElementChild)}
 		arr_dist = []
 		arr_uzd = []
 		try {
@@ -171,7 +175,9 @@
 						}
 					}
 				}
-				areaL = (arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)*Math.PI
+				L = Math.sqrt(arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)
+				areaL = (L**2)*Math.PI
+				model = objs_p[ob]['Модель']
 			}
 			// расчет для настенных громкоговорителей
 			if(el("exec").options[el("exec").selectedIndex].text === "Настенный"){
@@ -182,36 +188,37 @@
 				//расчитываем дальность и УЗД
 				for(let elem of power){
 					let d = dist(spl, elem, uzd)
-					let uzdL = UZDofdist(spl, elem, d)
-					if(uzdL<120 && uzdL > uzd){
+					console.log(d)
+					let uzdL = UZDofdist(spl, elem, (height -1.5)*Math.sin(Math.PI * ang[el("fr_sel").selectedIndex]/360))
+					console.log(uzdL)
+					//if(uzdL < 120 && uzdL > uzd){
+					if(uzdL < 120){
 						arr_dist.push(d)
 						arr_uzd.push(uzdL)
 					}
 				}
+				let R = arr_dist[arr_dist.length-1]
 				// в зависимости от выбранной частоты считаем площадь
 				if(el("fr_sel").selectedIndex == 0){
-					let L = Math.sqrt(arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)
-					let R = arr_dist[arr_dist.length-1]
+					L = Math.sqrt(arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)
 					areaL = (Math.PI*R*R)/2 - R*R*Math.acos(1-(R-L)/R) + L*Math.sqrt(R*R - L*L)
 				} else {
-					
+					L = Math.sqrt(R**2 - (height - 1.5)**2)
+					Ldiff = L - (height -1.5)/Math.tan(Math.PI * ang[el("fr_sel").selectedIndex]/360)
+					areaL = Math.PI * (Ldiff**2)* ang[el("fr_sel").selectedIndex]/360
 				}
-
+				model = objs_w[ob]['Модель']
 			}
-			//let areaL = (arr_dist[arr_dist.length-1]**2 - (height - 1.5)**2)*Math.PI
-			el("row0").value = objs_p[ob]['Модель']
+			
+			//el("data").style.display = "none"
+			el("row0").value = model
 			el("row1").value = power[power.length-1]
-			el("row2").value = areaL
-			el("row3").value = area/areaL
-			/*console.log(spl)
-			console.log(len_u)
-			console.log(power_calc)
-			console.log(lenght)*/
-			//узд
-			//let uzd = noise + 15
-			//console.log(uzd)
+			el("row2").value = Math.ceil(areaL, 0)
+			el("row3").value = Math.ceil(area/areaL, 0)
 			console.log(arr_dist)
 			console.log(arr_uzd)
+			if(el("exec").selectedIndex == 1) {draw_p( height, arr_dist[arr_dist.length-1], L, area )}
+			if(el("exec").selectedIndex == 2) {draw_w( height, arr_dist[arr_dist.length-1], L, area )}
 			
 		}catch (err) {
 			console.log(err)
@@ -219,34 +226,133 @@
 		}
 	}
 	// нарисовать диаграмму
-	function draw(dict, angle){
-		el("myCanvas").style.display = "block"
-		el("btn2").style.display = "block"
-		let canvas = document.getElementById("myCanvas")
-		canvas.height = dict.dist.length* 70 +35
-		let ctx = canvas.getContext("2d");
-		ctx.font = '20px Arial'
-		ctx.fillRect(canvas.width/2-10, 2, 20, 10);
-		ctx.beginPath();
-		ctx.moveTo(canvas.width/2-10, 12);
-		ctx.lineTo(canvas.width/2-20, 22);
-		ctx.lineTo(canvas.width/2+20, 22);
-		ctx.lineTo(canvas.width/2+10, 12);
-		ctx.fill();
-		ctx.stroke();
-		ctx.fillText(objs[ob]['Модель'], canvas.width/2+25, 20)
-		let dr = 70;
-		for(elem in dict.dist){
-			ctx.beginPath();
-			//console.log(arr[elem])
-			ctx.arc(canvas.width/2, 2, dr, (90-angle/2)*Math.PI/180, (angle/2+90)*Math.PI/180);
-			ctx.stroke();
-			//console.log(text[elem])
-			ctx.textAlign = "center";
-			ctx.fillText("УЗД: "+ dict.uzd[elem] + "дБ, " + "Дист.: " + dict.dist[elem] + "м., " + "Ширина: " + dict.width[elem] + "м." , canvas.width/2, dr+25)
-			dr+=70;
-		}
+	function draw_p(h, l, r, s){
+		const cylnd = new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 10);
+		//точки для УЗД
+		const points =[];
+		points.push(new THREE.Vector2(0, h))
+		points.push(new THREE.Vector2(r, h-r));
+		points.push(new THREE.Vector2(2*r/3, r-Math.sqrt(6)*r/3))
+		points.push(new THREE.Vector2(r/3, r-Math.sqrt(8)*r/3))
+		points.push( new THREE.Vector2(0, h-l) )
+		console.log(points)
+		//материал посторения УЗД
+		const uzdG = new THREE.LatheGeometry( points, 30, 0, Math.PI*2 );
+		const scene = new THREE.Scene();
+		scene.background = new THREE.Color(0x282c34);
+		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+		const renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		el('3d').appendChild( renderer.domElement );
+		const planeG = new THREE.PlaneGeometry(Math.sqrt(s), Math.sqrt(s), 1, 1);
+		const planeM = new THREE.MeshBasicMaterial({color: 0xcccccc});
+		const plane = new THREE.Mesh(planeG, planeM);
+		const material = new THREE.MeshNormalMaterial();
+		const matLpa= new THREE.MeshBasicMaterial({color: 0xFFFFFFF});
+		const matCon = new THREE.MeshBasicMaterial({color: 0x7777ff, wireframe: true});
+		plane.rotation.x=-0.5*Math.PI;
+		plane.position.x = 2;
+		plane.position.y = 0;
+		plane.position.z = 0;
+		//const mesh = new THREE.Mesh(conus, matCon);
+
+		const uzd = new THREE.Mesh(uzdG, matCon);
+		const meshLPA = new THREE.Mesh(cylnd, matLpa);
+		//uzd.position.setY(2);
+		meshLPA.position.setX(0);
+		meshLPA.position.setY(h);
+		const axes = new THREE.AxisHelper( 20 );
+		const grid = new THREE.GridHelper( 40, 10);
+		scene.add(uzd);
+		scene.add(meshLPA);
+		scene.add(plane);
+		scene.add(axes);
+		scene.add(grid);
+		camera.position.z = 20;
+		camera.position.x = -10;
+		camera.position.y = 20;
+		camera.lookAt(scene.position);
+
+		const controls = new THREE.OrbitControls( camera, renderer.domElement );
+		const frontSpot = new THREE.SpotLight(0xeeeece);
+		frontSpot.position.set(1000, 1000, 1000);
+		scene.add(frontSpot);
+
+		const frontSpot2 = new THREE.SpotLight(0xddddce);
+		frontSpot2.position.set(-500, -500, -500);
+		scene.add(frontSpot2);
+		const animate = function () {
+			controls.update()
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		};
+		animate();
 	}
+	//функция отрисовка УЗД для настенного извещателя
+	function draw_w(h, r, s){
+		/*const cylnd = new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 10);
+		//точки для УЗД
+		const points =[];
+		points.push(new THREE.Vector2(0, h + 0.1))
+		points.push(new THREE.Vector2(r, 1.5));
+		points.push(new THREE.Vector2(2*r/3, h-1.5-Math.sqrt(6)*r/3))
+		points.push(new THREE.Vector2(r/3, h-1.5-Math.sqrt(8)*r/3))
+		points.push( new THREE.Vector2(0, h-1.5-r) )
+		//console.log(points)
+		//материал посторения УЗД
+		const uzdG = new THREE.LatheGeometry( points, 30, 0, Math.PI*2 );
+		const scene = new THREE.Scene();
+		scene.background = new THREE.Color(0x282c34);
+		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+		const renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		el('3d').appendChild( renderer.domElement );
+		const planeG = new THREE.PlaneGeometry(Math.sqrt(s), Math.sqrt(s), 1, 1);
+		const planeM = new THREE.MeshBasicMaterial({color: 0xcccccc});
+		const plane = new THREE.Mesh(planeG, planeM);
+		const material = new THREE.MeshNormalMaterial();
+		const matLpa= new THREE.MeshBasicMaterial({color: 0xFFFFFFF});
+		const matCon = new THREE.MeshBasicMaterial({color: 0x7777ff, wireframe: true});
+		plane.rotation.x=-0.5*Math.PI;
+		plane.position.x = 2;
+		plane.position.y = 0;
+		plane.position.z = 0;
+		//const mesh = new THREE.Mesh(conus, matCon);
+
+		const uzd = new THREE.Mesh(uzdG, matCon);
+		const meshLPA = new THREE.Mesh(cylnd, matLpa);
+		//uzd.position.setY(2);
+		meshLPA.position.setX(0);
+		meshLPA.position.setY(h-0.1);
+		const axes = new THREE.AxisHelper( 20 );
+		const grid = new THREE.GridHelper( 40, 10);
+		scene.add(uzd);
+		scene.add(meshLPA);
+		scene.add(plane);
+		scene.add(axes);
+		scene.add(grid);
+		camera.position.z = 20;
+		camera.position.x = -10;
+		camera.position.y = 20;
+		camera.lookAt(scene.position);
+
+		const controls = new THREE.OrbitControls( camera, renderer.domElement );
+		const frontSpot = new THREE.SpotLight(0xeeeece);
+		frontSpot.position.set(1000, 1000, 1000);
+		scene.add(frontSpot);
+
+		const frontSpot2 = new THREE.SpotLight(0xddddce);
+		frontSpot2.position.set(-500, -500, -500);
+		scene.add(frontSpot2);
+		const animate = function () {
+			controls.update()
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		};
+		animate();*/
+
+	}
+	/*
 	function drawERROR(Er){
 		el("myCanvas").style.display = "block"
 		el("btn2").style.display = "block"
@@ -263,17 +369,17 @@
 		ctx.fill();
 		ctx.stroke();
 		ctx.fillText(Er)
-	}
+	}*/
 	// очистка рисунка
-	function drawClear(){
+	/*function drawClear(){
 		el("myCanvas").style.display = "none"
 		el("btn2").style.display = "none"
 		let canvas = document.getElementById("myCanvas")
 		let ctx = canvas.getContext("2d");
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
-	}
-	//таблица всхе значений
-	function getTable(data){
+	}*/
+	//таблица всех значений
+	/*function getTable(data){
 		if(el("grid") !== null){
 			el("data").removeChild(el("grid"))
 		}
@@ -283,7 +389,7 @@
 		}
 		str = str + '</div>'
 		es('#data').insertAdjacentHTML('beforeend', str)
-	}
+	}*/
 
 	// асинхронная функция печати в PDF
 	/*async function print() {	
