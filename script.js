@@ -119,7 +119,7 @@
 
 	function calc(){
 		//очищаем 3d
-		if(el('3d').lastElementChild != null){el('3d').removeChild(el('3d').lastElementChild)}
+		if(el('three').lastElementChild != null){el('three').removeChild(el('three').lastElementChild)}
 		arr_dist = []
 		arr_uzd = []
 		try {
@@ -231,9 +231,9 @@
 		//точки для УЗД
 		const points =[];
 		points.push(new THREE.Vector2(0, h))
-		points.push(new THREE.Vector2(r, h-r));
-		points.push(new THREE.Vector2(2*r/3, r-Math.sqrt(6)*r/3))
-		points.push(new THREE.Vector2(r/3, r-Math.sqrt(8)*r/3))
+		points.push(new THREE.Vector2(r, h-Math.sqrt(l**2-r**2)));
+		points.push(new THREE.Vector2(2*r/3, h-Math.sqrt(l**2-(2*r/3)**2)))
+		points.push(new THREE.Vector2(r/3, h-Math.sqrt(l**2-(r/3)**2)))
 		points.push( new THREE.Vector2(0, h-l) )
 		console.log(points)
 		//материал посторения УЗД
@@ -242,8 +242,10 @@
 		scene.background = new THREE.Color(0x282c34);
 		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
 		const renderer = new THREE.WebGLRenderer();
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		el('3d').appendChild( renderer.domElement );
+		//const canvasThree = renderer.domElement;
+		//renderer.setSize( canvasThree.clientWidth, canvasThree.clientHeight );
+		renderer.setSize( window.innerWidth, window.innerHeight);
+		el('three').appendChild( renderer.domElement );
 		const planeG = new THREE.PlaneGeometry(Math.sqrt(s), Math.sqrt(s), 1, 1);
 		const planeM = new THREE.MeshBasicMaterial({color: 0xcccccc});
 		const plane = new THREE.Mesh(planeG, planeM);

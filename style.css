@@ -12,6 +12,11 @@
 	width: 21px;
 }
 
+#three {
+	margin: 20px;
+	width: 500px;
+}
+
 #data {
 	/*display: none;*/
 	width: 700px;
