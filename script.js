@@ -218,7 +218,7 @@
 			console.log(arr_dist)
 			console.log(arr_uzd)
 			if(el("exec").selectedIndex == 1) {draw_p( height, arr_dist[arr_dist.length-1], L, area )}
-			if(el("exec").selectedIndex == 2) {draw_w( height, arr_dist[arr_dist.length-1], L, area )}
+			if(el("exec").selectedIndex == 2) {draw_w( height, arr_dist[arr_dist.length-1], Math.sqrt((arr_dist[arr_dist.length-1])**2 - ((arr_dist[arr_dist.length-1])*Math.cos(Math.PI * ang[el("fr_sel").selectedIndex]/360))**2), area )}
 			
 		}catch (err) {
 			console.log(err)
@@ -291,24 +291,25 @@
 		animate();
 	}
 	//функция отрисовка УЗД для настенного извещателя
-	function draw_w(h, r, s){
-		/*const cylnd = new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 10);
+	function draw_w(h, l, r, s){
+		const cylnd = new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 10);
 		//точки для УЗД
 		const points =[];
-		points.push(new THREE.Vector2(0, h + 0.1))
-		points.push(new THREE.Vector2(r, 1.5));
-		points.push(new THREE.Vector2(2*r/3, h-1.5-Math.sqrt(6)*r/3))
-		points.push(new THREE.Vector2(r/3, h-1.5-Math.sqrt(8)*r/3))
-		points.push( new THREE.Vector2(0, h-1.5-r) )
+		points.push(new THREE.Vector2(0, h))
+		points.push(new THREE.Vector2(r, h-Math.sqrt(l**2-r**2)))
+		points.push(new THREE.Vector2(2*r/3, h-Math.sqrt(l**2-(2*r/3)**2)))
+		points.push(new THREE.Vector2(r/3, h-Math.sqrt(l**2-(r/3)**2)))
+		points.push( new THREE.Vector2(0, h-l))
 		//console.log(points)
 		//материал посторения УЗД
-		const uzdG = new THREE.LatheGeometry( points, 30, 0, Math.PI*2 );
+		const uzdG = new THREE.LatheGeometry( points, 30, 1.5*Math.PI, Math.PI );
+		//Math.PI*0.5-Math.acos(l/(h-1.5))
 		const scene = new THREE.Scene();
 		scene.background = new THREE.Color(0x282c34);
 		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
 		const renderer = new THREE.WebGLRenderer();
 		renderer.setSize( window.innerWidth, window.innerHeight );
-		el('3d').appendChild( renderer.domElement );
+		el('three').appendChild( renderer.domElement );
 		const planeG = new THREE.PlaneGeometry(Math.sqrt(s), Math.sqrt(s), 1, 1);
 		const planeM = new THREE.MeshBasicMaterial({color: 0xcccccc});
 		const plane = new THREE.Mesh(planeG, planeM);
@@ -324,8 +325,12 @@
 		const uzd = new THREE.Mesh(uzdG, matCon);
 		const meshLPA = new THREE.Mesh(cylnd, matLpa);
 		//uzd.position.setY(2);
+		uzd.rotation.x = 0.5*Math.PI
+		uzd.position.setZ(-h)
+		uzd.position.setY(h)
 		meshLPA.position.setX(0);
-		meshLPA.position.setY(h-0.1);
+		meshLPA.position.setY(h);
+		meshLPA.rotation.x = -Math.PI
 		const axes = new THREE.AxisHelper( 20 );
 		const grid = new THREE.GridHelper( 40, 10);
 		scene.add(uzd);
@@ -351,7 +356,33 @@
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		};
-		animate();*/
+		//const planoref = new THREE.Plane(new THREE.Vector3(0,1,0), -5);
+		//const line = new THREE.Line3(new THREE.Vector3(0,1,0), new THREE.Vector3(0,-1,0));
+		//let pointOfIntersection = new THREE.Vector3();
+		//scene.add(planoref);
+		//scene.add(line);
+		//pointOfIntersection = planoref.intersectLine(line);
+		//console.log(pointOfIntersection)
+		//тест на пересечение
+		let line = new THREE.Line3()
+		var pointsOfIntersection = new THREE.Geometry();
+		let pointOfIntersection = new THREE.Vector3();
+		let a = new THREE.Vector3()
+		let b = new THREE.Vector3()
+		//var lineBC = new THREE.Line3()
+		//var lineCA = new THREE.Line3()
+		meshLPA.geometry.faces.forEach(function(face){
+			meshLPA.localToWorld(a.copy(meshLPA.geometry.vertices[face.a]));
+    		meshLPA.localToWorld(b.copy(meshLPA.geometry.vertices[face.b]));
+    		//meshLPA.localToWorld(c.copy(meshLPA.geometry.vertices[face.c]));
+    		line = new THREE.Line3(a, b);
+			//lineBC = new THREE.Line3(b, c);
+			//lineCA = new THREE.Line3(c, a);
+			pointOfIntersection = plane.intersectLine(line);
+			if(pointOfIntersection){pointsOfIntersection.push(pointOfIntersection.clone())}
+		})
+		//конец теста
+		animate();
 
 	}
 	/*
