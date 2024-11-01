@@ -42,7 +42,7 @@
 		let str = await f(bufArr)
 		const xls = await XLSX.read(str, { type: 'binary' });
 		//console.log(xls)
-		const json = await XLS.utils.sheet_to_json(xls.Sheets[sht]);
+		const json = await XLSX.utils.sheet_to_json(xls.Sheets[sht]);
 		return json
 	}
 
@@ -225,6 +225,40 @@
 			alert('Вы ввели не верное значение')
 		}
 	}
+	// нарисовать пересечение
+	function getIntersec(obj, scene){
+		//animate()
+		const planoref = new THREE.Plane( new THREE.Vector3(0, 1, 0), -1.5)
+		let pointsOfIntersection = new THREE.Geometry();
+		obj.geometry.faces.forEach(function(face){
+			let a = new THREE.Vector3()
+			let b = new THREE.Vector3()
+			let c = new THREE.Vector3()
+			obj.localToWorld(a.copy(obj.geometry.vertices[face.a]))
+			obj.localToWorld(b.copy(obj.geometry.vertices[face.b]))
+			obj.localToWorld(c.copy(obj.geometry.vertices[face.c]))
+			let lineAB = new THREE.Line3(a,b)
+			let lineBC = new THREE.Line3(b,c)
+			let lineCA = new THREE.Line3(c,a)
+			if(planoref.intersectsLine(lineAB)){pointsOfIntersection.vertices.push(planoref.intersectLine(lineAB).clone())}
+			if(planoref.intersectsLine(lineBC)){pointsOfIntersection.vertices.push(planoref.intersectLine(lineBC).clone())}
+			if(planoref.intersectsLine(lineCA)){pointsOfIntersection.vertices.push(planoref.intersectLine(lineCA).clone())}
+		})
+		let pointMat = new THREE.PointsMaterial({ size: 0.5, color: 0xffff00})
+		let pointsSec = new THREE.Points(pointsOfIntersection, pointMat)
+		let linesMat = new THREE.LineBasicMaterial({color: 0xffffff})
+		let lines = new THREE.LineSegments(pointsOfIntersection, linesMat)
+
+		//return pointsSec
+		scene.add(pointsSec)
+		scene.add(lines)
+	}
+	// анимация
+	/*function animate(controls, scene, camera, renderer) {
+		controls.update();
+		requestAnimationFrame(animate);
+		renderer.render(scene, camera);
+	};*/
 	// нарисовать диаграмму
 	function draw_p(h, l, r, s){
 		const cylnd = new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 10);
@@ -288,6 +322,8 @@
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		};
+		animate()
+		getIntersec(uzd, scene)
 		animate();
 	}
 	//функция отрисовка УЗД для настенного извещателя
@@ -351,37 +387,43 @@
 		const frontSpot2 = new THREE.SpotLight(0xddddce);
 		frontSpot2.position.set(-500, -500, -500);
 		scene.add(frontSpot2);
+
 		const animate = function () {
 			controls.update()
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		};
-		//const planoref = new THREE.Plane(new THREE.Vector3(0,1,0), -5);
-		//const line = new THREE.Line3(new THREE.Vector3(0,1,0), new THREE.Vector3(0,-1,0));
-		//let pointOfIntersection = new THREE.Vector3();
-		//scene.add(planoref);
-		//scene.add(line);
-		//pointOfIntersection = planoref.intersectLine(line);
-		//console.log(pointOfIntersection)
-		//тест на пересечение
-		let line = new THREE.Line3()
-		var pointsOfIntersection = new THREE.Geometry();
-		let pointOfIntersection = new THREE.Vector3();
-		let a = new THREE.Vector3()
-		let b = new THREE.Vector3()
-		//var lineBC = new THREE.Line3()
-		//var lineCA = new THREE.Line3()
-		meshLPA.geometry.faces.forEach(function(face){
-			meshLPA.localToWorld(a.copy(meshLPA.geometry.vertices[face.a]));
-    		meshLPA.localToWorld(b.copy(meshLPA.geometry.vertices[face.b]));
-    		//meshLPA.localToWorld(c.copy(meshLPA.geometry.vertices[face.c]));
-    		line = new THREE.Line3(a, b);
-			//lineBC = new THREE.Line3(b, c);
-			//lineCA = new THREE.Line3(c, a);
-			pointOfIntersection = plane.intersectLine(line);
-			if(pointOfIntersection){pointsOfIntersection.push(pointOfIntersection.clone())}
+
+		animate()
+		getIntersec(uzd, scene)
+		//animate()
+
+		/*const planoref = new THREE.Plane( new THREE.Vector3(0, 1, 0), -1.5)
+
+		let pointsOfIntersection = new THREE.Geometry();
+		uzd.geometry.faces.forEach(function(face){
+			let a = new THREE.Vector3()
+			let b = new THREE.Vector3()
+			let c = new THREE.Vector3()
+			uzd.localToWorld(a.copy(uzd.geometry.vertices[face.a]))
+			uzd.localToWorld(b.copy(uzd.geometry.vertices[face.b]))
+			uzd.localToWorld(c.copy(uzd.geometry.vertices[face.c]))
+			let lineAB = new THREE.Line3(a,b)
+			let lineBC = new THREE.Line3(b,c)
+			let lineCA = new THREE.Line3(c,a)
+			if(planoref.intersectsLine(lineAB)){pointsOfIntersection.vertices.push(planoref.intersectLine(lineAB).clone())}
+			if(planoref.intersectsLine(lineBC)){pointsOfIntersection.vertices.push(planoref.intersectLine(lineBC).clone())}
+			if(planoref.intersectsLine(lineCA)){pointsOfIntersection.vertices.push(planoref.intersectLine(lineCA).clone())}
 		})
-		//конец теста
+		
+		let pointMat = new THREE.PointsMaterial({ size: 0.5, color: 0xffff00})
+		let pointsSec = new THREE.Points(pointsOfIntersection, pointMat)
+		let linesMat = new THREE.LineBasicMaterial({color: 0xffffff})
+		let lines = new THREE.LineSegments(pointsOfIntersection, linesMat)
+		scene.add(pointsSec)
+		scene.add(lines)*/
+
+		
 		animate();
 
 	}
