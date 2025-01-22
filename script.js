@@ -228,7 +228,7 @@
 	// нарисовать пересечение
 	function getIntersec(obj, scene){
 		//animate()
-		const planoref = new THREE.Plane( new THREE.Vector3(0, 1, 0), -1.5)
+		const planoref = new THREE.Plane( new THREE.Vector3(0, 1, 0), -1.495)
 		let pointsOfIntersection = new THREE.Geometry();
 		obj.geometry.faces.forEach(function(face){
 			let a = new THREE.Vector3()
@@ -253,6 +253,26 @@
 		scene.add(pointsSec)
 		scene.add(lines)
 	}
+	// движение объекта
+	/*const move = (event, obj) => {
+		let keyCode = event.which;
+		console.log(keyCode)
+		if (keyCode == 87) {
+			obj.position.y += 1;
+			// down
+		} else if (keyCode == 83) {
+			obj.position.y -= 1;
+			// left
+		} else if (keyCode == 65) {
+			obj.position.x -= 1;
+			// right
+		} else if (keyCode == 68) {
+			obj.position.x += 1;
+			// space
+		}
+		render();
+
+	}*/
 	// анимация
 	/*function animate(controls, scene, camera, renderer) {
 		controls.update();
@@ -294,13 +314,17 @@
 
 		const uzd = new THREE.Mesh(uzdG, matCon);
 		const meshLPA = new THREE.Mesh(cylnd, matLpa);
+		const LPAUzd = new THREE.Group();
+		LPAUzd.add(uzd);
+		LPAUzd.add(meshLPA);
 		//uzd.position.setY(2);
 		meshLPA.position.setX(0);
 		meshLPA.position.setY(h);
 		const axes = new THREE.AxisHelper( 20 );
 		const grid = new THREE.GridHelper( 40, 10);
-		scene.add(uzd);
-		scene.add(meshLPA);
+		//scene.add(uzd);
+		//scene.add(meshLPA);
+		scene.add(LPAUzd);
 		scene.add(plane);
 		scene.add(axes);
 		scene.add(grid);
@@ -322,6 +346,7 @@
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		};
+		
 		animate()
 		getIntersec(uzd, scene)
 		animate();
@@ -478,6 +503,8 @@
 		//-- подключаем обработчик щелчка
 		document.addEventListener("change", changeVal);
 		el("btn").addEventListener("click", calc);
+		//-- подключаем обработчик нажатия клавиши
+		document.addEventListener("keydown", move, false);
 	}
 	//пуск
 	window.onload = onLoadHandler;
