@@ -1,3 +1,10 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+//import Stats from 'stats.js';
+//import * as dat from 'lil-gui';
+import * as XLSX from 'xlsx';
+import './style.css';
+
 // получить елемент по ID
 	const el = (id)=> document.getElementById(id)
 	//выбираем элементы
@@ -6,7 +13,8 @@
 	const enm = (name)=> document.getElementsByName(name)[0]
 	//адрес спецификации
 	//var url = "https://cloud.luis.ru/index.php/s/6NSQGe3YpBKzwWP/download/LPA_Spec.xlsx"
-	var url = "http://127.0.0.1:8080/LPA_Spec.xlsx"
+	//var url = "http://127.0.0.1:8080/LPA_Spec.xlsx"
+	var url = "https://cloud.luis.ru/index.php/s/ygCyQyZAMRNcwEK/download/LPA_Spec2.xlsx"
 	//глобальные переменные
 	let objs_p
 	let objs_w
@@ -17,6 +25,7 @@
 	let spls
 	let selAng
 	let power_calc
+	let power
 	let lenght
 	let height
 	let L
@@ -25,6 +34,9 @@
 	let arr_uzd
 	let areaL
 	let model
+	let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+	let renderer = new THREE.WebGLRenderer();
+	let scene = new THREE.Scene();
 	//let rupor
 	//функция загрузки данных
 	async function getData(address, sht){
@@ -47,8 +59,8 @@
 	}
 
 	//загружаем данные из спецификации и отпраляем их в переменную objs
-	getData(url, "Лист2").then(json => objs_p = json)
-	getData(url, "Лист3").then(json => objs_w = json)
+	getData(url, "Лист3").then(json => objs_p = json)
+	getData(url, "Лист2").then(json => objs_w = json)
 
 	//переменная исполнение
 	function changeVal(event){
@@ -217,8 +229,8 @@
 			el("row3").value = Math.ceil(area/areaL, 0)
 			console.log(arr_dist)
 			console.log(arr_uzd)
-			if(el("exec").selectedIndex == 1) {draw_p( height, arr_dist[arr_dist.length-1], L, area )}
-			if(el("exec").selectedIndex == 2) {draw_w( height, arr_dist[arr_dist.length-1], Math.sqrt((arr_dist[arr_dist.length-1])**2 - ((arr_dist[arr_dist.length-1])*Math.cos(Math.PI * ang[el("fr_sel").selectedIndex]/360))**2), area )}
+			if(el("exec").selectedIndex == 1) {draw_p( height, arr_dist[arr_dist.length-1], L, areaL )}
+			if(el("exec").selectedIndex == 2) {draw_w( height, arr_dist[arr_dist.length-1], Math.sqrt((arr_dist[arr_dist.length-1])**2 - ((arr_dist[arr_dist.length-1])*Math.cos(Math.PI * ang[el("fr_sel").selectedIndex]/360))**2), areaL )}
 			
 		}catch (err) {
 			console.log(err)
@@ -294,8 +306,8 @@
 		const uzdG = new THREE.LatheGeometry( points, 30, 0, Math.PI*2 );
 		const scene = new THREE.Scene();
 		scene.background = new THREE.Color(0x282c34);
-		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-		const renderer = new THREE.WebGLRenderer();
+		//const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+		//const renderer = new THREE.WebGLRenderer();
 		//const canvasThree = renderer.domElement;
 		//renderer.setSize( canvasThree.clientWidth, canvasThree.clientHeight );
 		renderer.setSize( window.innerWidth, window.innerHeight);
@@ -307,25 +319,25 @@
 		const matLpa= new THREE.MeshBasicMaterial({color: 0xFFFFFFF});
 		const matCon = new THREE.MeshBasicMaterial({color: 0x7777ff, wireframe: true});
 		plane.rotation.x=-0.5*Math.PI;
-		plane.position.x = 2;
+		plane.position.x = 0;
 		plane.position.y = 0;
 		plane.position.z = 0;
 		//const mesh = new THREE.Mesh(conus, matCon);
 
 		const uzd = new THREE.Mesh(uzdG, matCon);
 		const meshLPA = new THREE.Mesh(cylnd, matLpa);
-		const LPAUzd = new THREE.Group();
-		LPAUzd.add(uzd);
-		LPAUzd.add(meshLPA);
-		//uzd.position.setY(2);
-		meshLPA.position.setX(0);
+		//const LPAUzd = new THREE.Group();
+		//LPAUzd.add(uzd);
+		//LPAUzd.add(meshLPA);
+		uzd.position.setZ(l/2);
+		meshLPA.position.setZ(l/2);
 		meshLPA.position.setY(h);
 		const axes = new THREE.AxisHelper( 20 );
-		const grid = new THREE.GridHelper( 40, 10);
-		//scene.add(uzd);
-		//scene.add(meshLPA);
-		scene.add(LPAUzd);
-		scene.add(plane);
+		const grid = new THREE.GridHelper( 10, 10);
+		scene.add(uzd);
+		scene.add(meshLPA);
+		//scene.add(LPAUzd);
+		//scene.add(plane);
 		scene.add(axes);
 		scene.add(grid);
 		camera.position.z = 20;
@@ -333,7 +345,7 @@
 		camera.position.y = 20;
 		camera.lookAt(scene.position);
 
-		const controls = new THREE.OrbitControls( camera, renderer.domElement );
+		const controls = new OrbitControls( camera, renderer.domElement );
 		const frontSpot = new THREE.SpotLight(0xeeeece);
 		frontSpot.position.set(1000, 1000, 1000);
 		scene.add(frontSpot);
@@ -367,8 +379,8 @@
 		//Math.PI*0.5-Math.acos(l/(h-1.5))
 		const scene = new THREE.Scene();
 		scene.background = new THREE.Color(0x282c34);
-		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-		const renderer = new THREE.WebGLRenderer();
+		//camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+		//renderer = new THREE.WebGLRenderer();
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		el('three').appendChild( renderer.domElement );
 		const planeG = new THREE.PlaneGeometry(Math.sqrt(s), Math.sqrt(s), 1, 1);
@@ -378,7 +390,7 @@
 		const matLpa= new THREE.MeshBasicMaterial({color: 0xFFFFFFF});
 		const matCon = new THREE.MeshBasicMaterial({color: 0x7777ff, wireframe: true});
 		plane.rotation.x=-0.5*Math.PI;
-		plane.position.x = 2;
+		plane.position.x = 0;
 		plane.position.y = 0;
 		plane.position.z = 0;
 		//const mesh = new THREE.Mesh(conus, matCon);
@@ -387,16 +399,16 @@
 		const meshLPA = new THREE.Mesh(cylnd, matLpa);
 		//uzd.position.setY(2);
 		uzd.rotation.x = 0.5*Math.PI
-		uzd.position.setZ(-h)
+		uzd.position.setZ(-h+l/2)
 		uzd.position.setY(h)
-		meshLPA.position.setX(0);
+		meshLPA.position.setZ(l/2);
 		meshLPA.position.setY(h);
 		meshLPA.rotation.x = -Math.PI
 		const axes = new THREE.AxisHelper( 20 );
-		const grid = new THREE.GridHelper( 40, 10);
+		const grid = new THREE.GridHelper( 10, 10);
 		scene.add(uzd);
 		scene.add(meshLPA);
-		scene.add(plane);
+		//scene.add(plane);
 		scene.add(axes);
 		scene.add(grid);
 		camera.position.z = 20;
@@ -404,7 +416,7 @@
 		camera.position.y = 20;
 		camera.lookAt(scene.position);
 
-		const controls = new THREE.OrbitControls( camera, renderer.domElement );
+		const controls = new OrbitControls( camera, renderer.domElement );
 		const frontSpot = new THREE.SpotLight(0xeeeece);
 		frontSpot.position.set(1000, 1000, 1000);
 		scene.add(frontSpot);
@@ -450,6 +462,7 @@
 
 		
 		animate();
+
 
 	}
 	/*
@@ -504,8 +517,23 @@
 		document.addEventListener("change", changeVal);
 		el("btn").addEventListener("click", calc);
 		//-- подключаем обработчик нажатия клавиши
-		document.addEventListener("keydown", move, false);
+		//document.addEventListener("keydown", move, false);
 	}
 	//пуск
 	window.onload = onLoadHandler;
+	//изменяем параметры сцены при изменении окна
+		window.addEventListener('resize', () => {
+			// Обновляем размеры
+			//sizes.width = window.innerWidth;
+			//sizes.height = window.innerHeight;
+			console.log("окно изменилось")
+			// Обновляем соотношение сторон камеры
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+		
+			// Обновляем renderer
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+			renderer.render(scene, camera);
+		});
 	
